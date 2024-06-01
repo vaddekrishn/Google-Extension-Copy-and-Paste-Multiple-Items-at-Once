@@ -8,49 +8,51 @@ let copiedData = {
     VendorLocation: null
   };
   
+  let indicators = {};
+  
   function createContextMenus() {
     chrome.contextMenus.removeAll(() => {
       console.log("All context menus removed.");
   
       chrome.contextMenus.create({
         id: "copy-JobLink",
-        title: "Copy Job Link",
+        title: "Copy Job Link" + getIndicator("JobLink"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-JobTitle",
-        title: "Copy Job Title",
+        title: "Copy Job Title" + getIndicator("JobTitle"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorCompany",
-        title: "Copy Vendor Company",
+        title: "Copy Vendor Company" + getIndicator("VendorCompany"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorName",
-        title: "Copy Vendor Name",
+        title: "Copy Vendor Name" + getIndicator("VendorName"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorEmail",
-        title: "Copy Vendor Email",
+        title: "Copy Vendor Email" + getIndicator("VendorEmail"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorContact",
-        title: "Copy Vendor Contact",
+        title: "Copy Vendor Contact" + getIndicator("VendorContact"),
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorLocation",
-        title: "Copy Vendor Location",
+        title: "Copy Vendor Location" + getIndicator("VendorLocation"),
         contexts: ["all"]
       }, onCreated);
   
@@ -96,6 +98,16 @@ let copiedData = {
         contexts: ["editable"]
       }, onCreated);
     });
+  }
+  
+  function getIndicator(type) {
+    if (copiedData[type]) {
+      indicators[type] = " \u25C9"; // Green dot indicator
+      return indicators[type];
+    } else {
+      indicators[type] = "";
+      return "";
+    }
   }
   
   function onCreated() {
@@ -178,6 +190,7 @@ let copiedData = {
     }
   
     chrome.runtime.sendMessage({ action: "storeCopiedData", type: type, data: copiedContent });
+    updateContextMenus();
   }
   
   function pasteData(data) {
@@ -207,9 +220,28 @@ let copiedData = {
     }
   }
   
+  function updateContextMenus() {
+    const copyItems = [
+      "copy-JobLink",
+      "copy-JobTitle",
+      "copy-VendorCompany",
+      "copy-VendorName",
+      "copy-VendorEmail",
+      "copy-VendorContact",
+      "copy-VendorLocation"
+    ];
+  
+    copyItems.forEach(itemId => {
+      const type = itemId.split("-")[1];
+      const title = `Copy ${type}${getIndicator(type)}`;
+      chrome.contextMenus.update(itemId, { title });
+    });
+  }
+  
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action === "storeCopiedData") {
       copiedData[request.type] = request.data;
+      updateContextMenus();
     }
   });
   
