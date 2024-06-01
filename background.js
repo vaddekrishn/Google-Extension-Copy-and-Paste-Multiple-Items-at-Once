@@ -97,6 +97,12 @@ let copiedData = {
         title: "Paste Vendor Location" + getIndicator("VendorLocation"),
         contexts: ["editable"]
       }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "reset",
+        title: "Reset All Data",
+        contexts: ["all"]
+      }, onCreated);
     });
   }
   
@@ -163,6 +169,8 @@ let copiedData = {
         func: pasteData,
         args: [copiedData[type]]
       });
+    } else if (info.menuItemId === "reset") {
+      resetData();
     }
   });
   
@@ -218,6 +226,20 @@ let copiedData = {
     } else {
       console.warn(`No active element found to paste data into.`);
     }
+  }
+  
+  function resetData() {
+    copiedData = {
+      JobLink: null,
+      JobTitle: null,
+      VendorCompany: null,
+      VendorName: null,
+      VendorEmail: null,
+      VendorContact: null,
+      VendorLocation: null
+    };
+    updateContextMenus();
+    console.log("All data has been reset.");
   }
   
   function updateContextMenus() {
