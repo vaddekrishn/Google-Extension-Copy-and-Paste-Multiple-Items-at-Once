@@ -58,43 +58,43 @@ let copiedData = {
   
       chrome.contextMenus.create({
         id: "paste-JobLink",
-        title: "Paste Job Link",
+        title: "Paste Job Link" + getIndicator("JobLink"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-JobTitle",
-        title: "Paste Job Title",
+        title: "Paste Job Title" + getIndicator("JobTitle"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorCompany",
-        title: "Paste Vendor Company",
+        title: "Paste Vendor Company" + getIndicator("VendorCompany"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorName",
-        title: "Paste Vendor Name",
+        title: "Paste Vendor Name" + getIndicator("VendorName"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorEmail",
-        title: "Paste Vendor Email",
+        title: "Paste Vendor Email" + getIndicator("VendorEmail"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorContact",
-        title: "Paste Vendor Contact",
+        title: "Paste Vendor Contact" + getIndicator("VendorContact"),
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorLocation",
-        title: "Paste Vendor Location",
+        title: "Paste Vendor Location" + getIndicator("VendorLocation"),
         contexts: ["editable"]
       }, onCreated);
     });
@@ -231,9 +231,25 @@ let copiedData = {
       "copy-VendorLocation"
     ];
   
+    const pasteItems = [
+      "paste-JobLink",
+      "paste-JobTitle",
+      "paste-VendorCompany",
+      "paste-VendorName",
+      "paste-VendorEmail",
+      "paste-VendorContact",
+      "paste-VendorLocation"
+    ];
+  
     copyItems.forEach(itemId => {
       const type = itemId.split("-")[1];
       const title = `Copy ${type}${getIndicator(type)}`;
+      chrome.contextMenus.update(itemId, { title });
+    });
+  
+    pasteItems.forEach(itemId => {
+      const type = itemId.split("-")[1];
+      const title = `Paste ${type}${getIndicator(type)}`;
       chrome.contextMenus.update(itemId, { title });
     });
   }
