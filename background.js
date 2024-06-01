@@ -14,90 +14,121 @@ let copiedData = {
     chrome.contextMenus.removeAll(() => {
       console.log("All context menus removed.");
   
+      // Create parent "Copy" menu
+      chrome.contextMenus.create({
+        id: "copy",
+        title: "Copy",
+        contexts: ["all"]
+      }, onCreated);
+  
+      // Create sub-menu items under "Copy"
       chrome.contextMenus.create({
         id: "copy-JobLink",
-        title: "Copy Job Link" + getIndicator("JobLink"),
+        title: "Job Link" + getIndicator("JobLink"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-JobTitle",
-        title: "Copy Job Title" + getIndicator("JobTitle"),
+        title: "Job Title" + getIndicator("JobTitle"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorCompany",
-        title: "Copy Vendor Company" + getIndicator("VendorCompany"),
+        title: "Vendor Company" + getIndicator("VendorCompany"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorName",
-        title: "Copy Vendor Name" + getIndicator("VendorName"),
+        title: "Vendor Name" + getIndicator("VendorName"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorEmail",
-        title: "Copy Vendor Email" + getIndicator("VendorEmail"),
+        title: "Vendor Email" + getIndicator("VendorEmail"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorContact",
-        title: "Copy Vendor Contact" + getIndicator("VendorContact"),
+        title: "Vendor Contact" + getIndicator("VendorContact"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-VendorLocation",
-        title: "Copy Vendor Location" + getIndicator("VendorLocation"),
+        title: "Vendor Location" + getIndicator("VendorLocation"),
+        parentId: "copy",
         contexts: ["all"]
       }, onCreated);
   
+      // Create parent "Paste" menu
+      chrome.contextMenus.create({
+        id: "paste",
+        title: "Paste",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      // Create sub-menu items under "Paste"
       chrome.contextMenus.create({
         id: "paste-JobLink",
-        title: "Paste Job Link" + getIndicator("JobLink"),
+        title: "Job Link" + getIndicator("JobLink"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-JobTitle",
-        title: "Paste Job Title" + getIndicator("JobTitle"),
+        title: "Job Title" + getIndicator("JobTitle"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorCompany",
-        title: "Paste Vendor Company" + getIndicator("VendorCompany"),
+        title: "Vendor Company" + getIndicator("VendorCompany"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorName",
-        title: "Paste Vendor Name" + getIndicator("VendorName"),
+        title: "Vendor Name" + getIndicator("VendorName"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorEmail",
-        title: "Paste Vendor Email" + getIndicator("VendorEmail"),
+        title: "Vendor Email" + getIndicator("VendorEmail"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorContact",
-        title: "Paste Vendor Contact" + getIndicator("VendorContact"),
+        title: "Vendor Contact" + getIndicator("VendorContact"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "paste-VendorLocation",
-        title: "Paste Vendor Location" + getIndicator("VendorLocation"),
+        title: "Vendor Location" + getIndicator("VendorLocation"),
+        parentId: "paste",
         contexts: ["editable"]
       }, onCreated);
   
+      // Create "Reset All Data" menu item
       chrome.contextMenus.create({
         id: "reset",
         title: "Reset All Data",
@@ -265,13 +296,13 @@ let copiedData = {
   
     copyItems.forEach(itemId => {
       const type = itemId.split("-")[1];
-      const title = `Copy ${type}${getIndicator(type)}`;
+      const title = `${type}${getIndicator(type)}`;
       chrome.contextMenus.update(itemId, { title });
     });
   
     pasteItems.forEach(itemId => {
       const type = itemId.split("-")[1];
-      const title = `Paste ${type}${getIndicator(type)}`;
+      const title = `${type}${getIndicator(type)}`;
       chrome.contextMenus.update(itemId, { title });
     });
   }
