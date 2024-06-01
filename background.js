@@ -5,7 +5,8 @@ let copiedData = {
     VendorName: null,
     VendorEmail: null,
     VendorContact: null,
-    VendorLocation: null
+    VendorLocation: null,
+    VendorLinkedIn: null
   };
   
   function createContextMenus() {
@@ -27,6 +28,7 @@ let copiedData = {
       createMenuItem("copy-VendorEmail", "📧 Email", "copy", getCopiedData("VendorEmail"));
       createMenuItem("copy-VendorContact", "☎️ Contact", "copy", getCopiedData("VendorContact"));
       createMenuItem("copy-VendorLocation", "🗺️ Location", "copy", getCopiedData("VendorLocation"));
+      createMenuItem("copy-VendorLinkedIn", "🔷 LinkedIn", "copy", getCopiedData("VendorLinkedIn"));
   
       // Create parent "Paste" menu
       chrome.contextMenus.create({
@@ -43,6 +45,7 @@ let copiedData = {
       createMenuItem("paste-VendorEmail", "📧 Email", "paste", getCopiedData("VendorEmail"));
       createMenuItem("paste-VendorContact", "☎️ Contact", "paste", getCopiedData("VendorContact"));
       createMenuItem("paste-VendorLocation", "🗺️ Location", "paste", getCopiedData("VendorLocation"));
+      createMenuItem("paste-VendorLinkedIn", "🔷 LinkedIn", "paste", getCopiedData("VendorLinkedIn"));
   
       // Create "Reset All Data" menu item
       chrome.contextMenus.create({
@@ -96,7 +99,8 @@ let copiedData = {
       "copy-VendorName",
       "copy-VendorEmail",
       "copy-VendorContact",
-      "copy-VendorLocation"
+      "copy-VendorLocation",
+      "copy-VendorLinkedIn"
     ];
   
     const pasteItems = [
@@ -106,7 +110,8 @@ let copiedData = {
       "paste-VendorName",
       "paste-VendorEmail",
       "paste-VendorContact",
-      "paste-VendorLocation"
+      "paste-VendorLocation",
+      "paste-VendorLinkedIn"
     ];
   
     if (copyItems.includes(info.menuItemId)) {
@@ -151,6 +156,11 @@ let copiedData = {
       }
     }
   
+    // Remove 'mailto:' from the copied data if it's present and the type is 'VendorEmail'
+    if (type === 'VendorEmail' && copiedContent.startsWith('mailto:')) {
+      copiedContent = copiedContent.slice(7); // Remove the 'mailto:' part
+    }
+  
     chrome.runtime.sendMessage({ action: "storeCopiedData", type: type, data: copiedContent });
     updateContextMenus();
   }
@@ -190,7 +200,8 @@ let copiedData = {
       VendorName: null,
       VendorEmail: null,
       VendorContact: null,
-      VendorLocation: null
+      VendorLocation: null,
+      VendorLinkedIn: null
     };
     updateContextMenus();
     console.log("All data has been reset.");
@@ -204,7 +215,8 @@ let copiedData = {
       "copy-VendorName",
       "copy-VendorEmail",
       "copy-VendorContact",
-      "copy-VendorLocation"
+      "copy-VendorLocation",
+      "copy-VendorLinkedIn"
     ];
   
     const pasteItems = [
@@ -214,7 +226,8 @@ let copiedData = {
       "paste-VendorName",
       "paste-VendorEmail",
       "paste-VendorContact",
-      "paste-VendorLocation"
+      "paste-VendorLocation",
+      "paste-VendorLinkedIn"
     ];
   
     // Remove existing context menu items
@@ -250,6 +263,8 @@ let copiedData = {
         return "☎️ Contact";
       case "VendorLocation":
         return "🗺️ Location";
+      case "VendorLinkedIn":
+        return "🔷 LinkedIn";
       default:
         return "";
     }
