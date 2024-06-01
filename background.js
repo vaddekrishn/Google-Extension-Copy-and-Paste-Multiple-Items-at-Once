@@ -1,6 +1,11 @@
 let copiedData = {
-    text1: null,
-    text2: null
+    JobLink: null,
+    JobTitle: null,
+    VendorCompany: null,
+    VendorName: null,
+    VendorEmail: null,
+    VendorContact: null,
+    VendorLocation: null
   };
   
   function createContextMenus() {
@@ -8,26 +13,86 @@ let copiedData = {
       console.log("All context menus removed.");
   
       chrome.contextMenus.create({
-        id: "copy-text1",
-        title: "Copy Text 1",
+        id: "copy-JobLink",
+        title: "Copy Job Link",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
-        id: "copy-text2",
-        title: "Copy Text 2",
+        id: "copy-JobTitle",
+        title: "Copy Job Title",
         contexts: ["all"]
       }, onCreated);
   
       chrome.contextMenus.create({
-        id: "paste-text1",
-        title: "Paste Text 1",
+        id: "copy-VendorCompany",
+        title: "Copy Vendor Company",
+        contexts: ["all"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "copy-VendorName",
+        title: "Copy Vendor Name",
+        contexts: ["all"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "copy-VendorEmail",
+        title: "Copy Vendor Email",
+        contexts: ["all"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "copy-VendorContact",
+        title: "Copy Vendor Contact",
+        contexts: ["all"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "copy-VendorLocation",
+        title: "Copy Vendor Location",
+        contexts: ["all"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-JobLink",
+        title: "Paste Job Link",
         contexts: ["editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
-        id: "paste-text2",
-        title: "Paste Text 2",
+        id: "paste-JobTitle",
+        title: "Paste Job Title",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-VendorCompany",
+        title: "Paste Vendor Company",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-VendorName",
+        title: "Paste Vendor Name",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-VendorEmail",
+        title: "Paste Vendor Email",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-VendorContact",
+        title: "Paste Vendor Contact",
+        contexts: ["editable"]
+      }, onCreated);
+  
+      chrome.contextMenus.create({
+        id: "paste-VendorLocation",
+        title: "Paste Vendor Location",
         contexts: ["editable"]
       }, onCreated);
     });
@@ -52,29 +117,39 @@ let copiedData = {
       return;
     }
   
-    if (info.menuItemId === "copy-text1") {
+    const copyItems = [
+      "copy-JobLink",
+      "copy-JobTitle",
+      "copy-VendorCompany",
+      "copy-VendorName",
+      "copy-VendorEmail",
+      "copy-VendorContact",
+      "copy-VendorLocation"
+    ];
+  
+    const pasteItems = [
+      "paste-JobLink",
+      "paste-JobTitle",
+      "paste-VendorCompany",
+      "paste-VendorName",
+      "paste-VendorEmail",
+      "paste-VendorContact",
+      "paste-VendorLocation"
+    ];
+  
+    if (copyItems.includes(info.menuItemId)) {
+      const type = info.menuItemId.split("-")[1];
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: copyData,
-        args: ["text1", info]
+        args: [type, info]
       });
-    } else if (info.menuItemId === "copy-text2") {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: copyData,
-        args: ["text2", info]
-      });
-    } else if (info.menuItemId === "paste-text1") {
+    } else if (pasteItems.includes(info.menuItemId)) {
+      const type = info.menuItemId.split("-")[1];
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: pasteData,
-        args: [copiedData.text1]
-      });
-    } else if (info.menuItemId === "paste-text2") {
-      chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: pasteData,
-        args: [copiedData.text2]
+        args: [copiedData[type]]
       });
     }
   });
