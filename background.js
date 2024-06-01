@@ -20,54 +20,13 @@ let copiedData = {
       }, onCreated);
   
       // Create sub-menu items under "Copy"
-      chrome.contextMenus.create({
-        id: "copy-JobLink",
-        title: "Job Link" + getCopiedData("JobLink"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-JobTitle",
-        title: "Job Title" + getCopiedData("JobTitle"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-VendorCompany",
-        title: "Vendor Company" + getCopiedData("VendorCompany"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-VendorName",
-        title: "Vendor Name" + getCopiedData("VendorName"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-VendorEmail",
-        title: "Vendor Email" + getCopiedData("VendorEmail"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-VendorContact",
-        title: "Vendor Contact" + getCopiedData("VendorContact"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "copy-VendorLocation",
-        title: "Vendor Location" + getCopiedData("VendorLocation"),
-        parentId: "copy",
-        contexts: ["all"]
-      }, onCreated);
+      createMenuItem("copy-JobLink", "➥ Job Link", "copy", getCopiedData("JobLink"));
+      createMenuItem("copy-JobTitle", "💼 Job Title", "copy", getCopiedData("JobTitle"));
+      createMenuItem("copy-VendorCompany", "🏢 Company", "copy", getCopiedData("VendorCompany"));
+      createMenuItem("copy-VendorName", "👤 Name", "copy", getCopiedData("VendorName"));
+      createMenuItem("copy-VendorEmail", "📧 Email", "copy", getCopiedData("VendorEmail"));
+      createMenuItem("copy-VendorContact", "☎️ Contact", "copy", getCopiedData("VendorContact"));
+      createMenuItem("copy-VendorLocation", "🗺️ Location", "copy", getCopiedData("VendorLocation"));
   
       // Create parent "Paste" menu
       chrome.contextMenus.create({
@@ -77,54 +36,13 @@ let copiedData = {
       }, onCreated);
   
       // Create sub-menu items under "Paste"
-      chrome.contextMenus.create({
-        id: "paste-JobLink",
-        title: "Job Link" + getCopiedData("JobLink"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-JobTitle",
-        title: "Job Title" + getCopiedData("JobTitle"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-VendorCompany",
-        title: "Vendor Company" + getCopiedData("VendorCompany"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-VendorName",
-        title: "Vendor Name" + getCopiedData("VendorName"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-VendorEmail",
-        title: "Vendor Email" + getCopiedData("VendorEmail"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-VendorContact",
-        title: "Vendor Contact" + getCopiedData("VendorContact"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
-  
-      chrome.contextMenus.create({
-        id: "paste-VendorLocation",
-        title: "Vendor Location" + getCopiedData("VendorLocation"),
-        parentId: "paste",
-        contexts: ["editable"]
-      }, onCreated);
+      createMenuItem("paste-JobLink", "➥ Job Link", "paste", getCopiedData("JobLink"));
+      createMenuItem("paste-JobTitle", "💼 Job Title", "paste", getCopiedData("JobTitle"));
+      createMenuItem("paste-VendorCompany", "🏢 Company", "paste", getCopiedData("VendorCompany"));
+      createMenuItem("paste-VendorName", "👤 Name", "paste", getCopiedData("VendorName"));
+      createMenuItem("paste-VendorEmail", "📧 Email", "paste", getCopiedData("VendorEmail"));
+      createMenuItem("paste-VendorContact", "☎️ Contact", "paste", getCopiedData("VendorContact"));
+      createMenuItem("paste-VendorLocation", "🗺️ Location", "paste", getCopiedData("VendorLocation"));
   
       // Create "Reset All Data" menu item
       chrome.contextMenus.create({
@@ -133,6 +51,15 @@ let copiedData = {
         contexts: ["all"]
       }, onCreated);
     });
+  }
+  
+  function createMenuItem(id, title, parentId, copiedData) {
+    chrome.contextMenus.create({
+      id: id,
+      title: title + copiedData,
+      parentId: parentId,
+      contexts: parentId === "copy" ? ["all"] : ["editable"]
+    }, onCreated);
   }
   
   function getCopiedData(type) {
@@ -290,17 +217,42 @@ let copiedData = {
       "paste-VendorLocation"
     ];
   
+    // Remove existing context menu items
+    copyItems.forEach(itemId => chrome.contextMenus.remove(itemId));
+    pasteItems.forEach(itemId => chrome.contextMenus.remove(itemId));
+  
+    // Create new context menu items
     copyItems.forEach(itemId => {
       const type = itemId.split("-")[1];
-      const title = `${type}${getCopiedData(type)}`;
-      chrome.contextMenus.update(itemId, { title });
+      createMenuItem(itemId, getItemTitle(itemId), "copy", getCopiedData(type));
     });
   
     pasteItems.forEach(itemId => {
       const type = itemId.split("-")[1];
-      const title = `${type}${getCopiedData(type)}`;
-      chrome.contextMenus.update(itemId, { title });
+      createMenuItem(itemId, getItemTitle(itemId), "paste", getCopiedData(type));
     });
+  }
+  
+  function getItemTitle(itemId) {
+    const type = itemId.split("-")[1];
+    switch (type) {
+      case "JobLink":
+        return "➥ Job Link";
+      case "JobTitle":
+        return "💼 Job Title";
+      case "VendorCompany":
+        return "🏢 Company";
+      case "VendorName":
+        return "👤 Name";
+      case "VendorEmail":
+        return "📧 Email";
+      case "VendorContact":
+        return "☎️ Contact";
+      case "VendorLocation":
+        return "🗺️ Location";
+      default:
+        return "";
+    }
   }
   
   chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
