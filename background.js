@@ -10,13 +10,13 @@ let copiedData = {
       chrome.contextMenus.create({
         id: "copy-text1",
         title: "Copy Text 1",
-        contexts: ["selection"]
+        contexts: ["selection", "link", "image", "editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
         id: "copy-text2",
         title: "Copy Text 2",
-        contexts: ["selection"]
+        contexts: ["selection", "link", "image", "editable"]
       }, onCreated);
   
       chrome.contextMenus.create({
@@ -47,63 +47,64 @@ let copiedData = {
     if (info.menuItemId === "copy-text1") {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: copyText,
-        args: ["text1"]
+        func: copyData,
+        args: ["text1", info]
       });
     } else if (info.menuItemId === "copy-text2") {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: copyText,
-        args: ["text2"]
+        func: copyData,
+        args: ["text2", info]
       });
     } else if (info.menuItemId === "paste-text1") {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: pasteText,
+        func: pasteData,
         args: [copiedData.text1]
       });
     } else if (info.menuItemId === "paste-text2") {
       chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        func: pasteText,
+        func: pasteData,
         args: [copiedData.text2]
       });
     }
   });
   
-  function copyText(type) {
-    const selection = window.getSelection();
-    const selectedText = selection.toString();
+  function copyData(type, info) {
+    let copiedContent;
   
-    if (selectedText) {
-      const tempInput = document.createElement("textarea");
-      tempInput.value = selectedText;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      console.log(`Text copied (${type}):`, selectedText);
-  
-      chrome.runtime.sendMessage({ action: "storeCopiedData", type: type, data: selectedText });
+    if (info.selectionText) {
+      copiedContent = info.selectionText;
+      console.log(`Text copied (${type}):`, copiedContent);
+    } else if (info.linkUrl) {
+      copiedContent = info.linkUrl;
+      console.log(`Link copied (${type}):`, copiedContent);
+    } else if (info.srcUrl) {
+      copiedContent = info.srcUrl;
+      console.log(`Image copied (${type}):`, copiedContent);
     } else {
-      console.warn(`No text selected for ${type}`);
+      console.warn(`No data selected for ${type}`);
+      return;
     }
+  
+    chrome.runtime.sendMessage({ action: "storeCopiedData", type: type, data: copiedContent });
   }
   
-  function pasteText(data) {
+  function pasteData(data) {
     const activeElement = document.activeElement;
     if (activeElement) {
       if (activeElement.isContentEditable) {
         document.execCommand('insertText', false, data);
-        console.log(`Text pasted into contentEditable element.`);
+        console.log(`Data pasted into contentEditable element.`);
       } else if (activeElement.tagName === 'TEXTAREA' || activeElement.tagName === 'INPUT') {
         activeElement.value = data;
-        console.log(`Text pasted into textarea or input element.`);
+        console.log(`Data pasted into textarea or input element.`);
       } else {
-        console.warn(`Unsupported element type (${activeElement.tagName}) for pasting text.`);
+        console.warn(`Unsupported element type (${activeElement.tagName}) for pasting data.`);
       }
     } else {
-      console.warn(`No active element found to paste text into.`);
+      console.warn(`No active element found to paste data into.`);
     }
   }
   
